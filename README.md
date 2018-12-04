@@ -40,5 +40,6 @@ Writes	             Reads
 - [ ] Create Failover / Failback Scripts :zzz:
 - [ ] `pg_rewind` method :zzz:
 ### Test Branches
-- :x: Live Scenario [CentOS3VM](../CentOS3VM/CentOS3VM)
-- :heavy_check_mark: Test Scenario [UbuntuSingleVM](../UbuntuSingleVM/UbuntuSingleVM)
+- Live Scenario [CentOS3VM](../CentOS3VM/CentOS3VM)
+- Test Scenario [UbuntuSingleVM](../UbuntuSingleVM/UbuntuSingleVM)
+[![Build Status](https://travis-ci.org/arashpath/postgresql10-replication.svg?branch=UbuntuSingleVM)](https://travis-ci.org/arashpath/postgresql10-replication)
