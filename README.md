@@ -24,8 +24,11 @@ Writes	             Reads
 * WAL files available on a network drive
 * Network drive backed up
 
-# [See Docs](https://github.com/arashpath/postgresql10-replication/wiki)
+## [See Docs](https://github.com/arashpath/postgresql10-replication/wiki)
 
+## References
+- [Streaming replication](https://snippets.aktagon.com/snippets/824-postgresql-10-with-streaming-replication-and-pitr)
+- [Monitoring replication](https://pgdash.io/blog/monitoring-postgres-replication.html)
 
 ----
 ## Progress Status
@@ -33,13 +36,9 @@ Writes	             Reads
 - [x] Promote Slave on Master failure :heavy_check_mark:
 - [ ] Demote old Master as Slave :heavy_check_mark:
   - [ ] Simple `recovery.conf` method :x:
-  - [ ] `pg_rewind` method :zzz:
   - [x] New Base Backup :heavy_check_mark:
-- [ ] [Testing scenarios with Single VM approach](./UbuntuSingleVM) 
-  - [x] [Create and Verify Replication](./UbuntuSingleVM/#testing-replication) :heavy_check_mark:
-    - [x] Testing Without Replication Slot
-      - [x] [Testing FailOver](./UbuntuSingleVM/#testing-failover) :heavy_check_mark:
-      - [x] [Testing FailBack](./UbuntuSingleVM/#testing-failover) :heavy_check_mark:
-    - [ ] Testing With Replication Slot
-      - [ ] [Testing FailOver](./UbuntuSingleVM/#testing-failover) :zzz:
-      - [ ] [Testing FailBack](./UbuntuSingleVM/#testing-failover) :zzz:
+- [ ] Create Failover / Failback Scripts :zzz:
+- [ ] `pg_rewind` method :zzz:
+### Test Branches
+- :x: Live Scenario [CentOS3VM](../CentOS3VM/CentOS3VM)
+- :heavy_check_mark: Test Scenario [UbuntuSingleVM](../UbuntuSingleVM/UbuntuSingleVM)
