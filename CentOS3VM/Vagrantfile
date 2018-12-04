@@ -1,0 +1,58 @@
+# -*- mode: ruby -*-
+# vi: set ft=ruby :
+Vagrant.configure("2") do |config|
+  config.vm.box = "geerlingguy/centos7"
+  config.vm.provider "virtualbox" do |vb|
+    vb.memory = "384"
+    vb.customize ["modifyvm", :id, "--natdnshostresolver1", "on"]
+    vb.customize ["modifyvm", :id, "--natdnsproxy1", "on"]
+  end
+  config.vm.provision "shell", inline: <<-ALL
+      sudo timedatectl set-timezone Asia/Kolkata
+    ALL
+  # Creating a VM for NAS  
+  config.vm.define "nas" do |nas|
+    nas.vm.host_name = "nas"
+    nas.vm.network "private_network", ip: "192.168.33.10"
+    nas.vm.provision "shell", inline: <<-NAS
+        sudo /bin/sh /vagrant/nas_srv.sh
+      NAS
+  end
+  # Creating a VM for Master 
+  config.vm.define :psql01 do |psql01|
+    psql01.vm.host_name = "psql01"
+    psql01.vm.network "private_network", ip: "192.168.33.11"
+    psql01.vm.provision "shell", inline: <<-MASTER 
+        sudo /bin/sh /vagrant/nas_mnt.sh
+        sudo /bin/sh /vagrant/install_postgres.sh
+        sudo /bin/sh /vagrant/config_master.sh
+        sudo /bin/sh /vagrant/failover.sh
+      MASTER
+  end
+  # Creating a VM for Slave 
+  config.vm.define :psql02 do |psql02|
+    psql02.vm.host_name = "psql02"
+    psql02.vm.network "private_network", ip: "192.168.33.12"
+    psql02.vm.provision "shell", inline: <<-SLAVE 
+        sudo /bin/sh /vagrant/nas_mnt.sh
+        sudo /bin/sh /vagrant/install_postgres.sh
+        sudo /bin/sh /vagrant/config_slave.sh
+        sudo /bin/sh /vagrant/failover.sh
+      SLAVE
+  end
+end
+#BEGIN {
+#puts "  
+#================================================================================ 
+#              == | PostgreSQL Cluster Setup for FosCos | ==
+#"
+#}
+#END {
+#puts "
+#                      == | Cluster VM Details | ==
+#            'vagrant ssh nas'    => NAS Svr   : 192.168.33.10
+#            'vagrant ssh psql01' => Master Svr: 192.168.33.11
+#            'vagrant ssh psql02' => Slave Svr : 192.168.33.12
+#================================================================================ 
+#"
+#}
