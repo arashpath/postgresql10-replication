@@ -37,9 +37,9 @@ sudo sed -i "/# replication privilege/a\
 local   replication     rep_user                                trust" $conf_loc/main/pg_hba.conf
 
 
-sudo -H -u postgres psql -c "CREATE USER rep_user WITH replication;"
-#select * from pg_create_physical_replication_slot('replica');
-#select * from pg_replication_slots;" 
+sudo -H -u postgres psql -c "CREATE USER rep_user WITH replication;
+select * from pg_create_physical_replication_slot('replica');
+select * from pg_replication_slots;" 
 
 sudo pg_ctlcluster 10 main restart
 
@@ -79,7 +79,7 @@ recovery_target_timeline = 'latest'
 standby_mode = 'on'
 primary_conninfo = 'user=rep_user passfile=''/var/lib/postgresql/.pgpass'' host=''/var/run/postgresql'' port=5432 sslmode=prefer sslcompression=1 krbsrvname=postgres target_session_attrs=any'
 archive_cleanup_command = 'pg_archivecleanup /var/lib/postgresql/pg_log_archive/replica1 %r'
-#primary_slot_name = 'replica' 
+primary_slot_name = 'replica' 
 EOF"
 
 sudo pg_ctlcluster 10 replica1 start ;

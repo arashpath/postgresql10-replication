@@ -18,22 +18,20 @@ recovery_target_timeline = 'latest'
 standby_mode = 'on'
 primary_conninfo = 'user=rep_user passfile=''/var/lib/postgresql/.pgpass'' host=''/var/run/postgresql'' port=5433 sslmode=prefer sslcompression=1 krbsrvname=postgres target_session_attrs=any'
 archive_cleanup_command = 'pg_archivecleanup /var/lib/postgresql/pg_log_archive/main %r'
-#primary_slot_name = 'main' 
+primary_slot_name = 'main' 
 EOF"
 
-#echo "Creating replication slot"
-#sudo -H -u postgres psql -c "select * from pg_create_physical_replication_slot('main');" -p 5433
+echo "Creating replication slot"
+sudo -H -u postgres psql -c "select * from pg_create_physical_replication_slot('main');" -p 5433
 
 # Starting Main As Slave
 echo "Deomote Master: main ..."
 sudo systemctl start postgresql@10-main
 sudo tail -n 100 /var/log/postgresql/postgresql-10-main.log
 
+# review and drop slots on replica
+sudo -H -u postgres psql -c "select * from pg_replication_slots;"
+sudo -H -u postgres psql -c "select * from pg_drop_replication_slot('replica');"
+
 echo "Current State"
 sudo pg_lsclusters
-
-# review and drop slots on replica
-#sudo -H -u postgres psql -c "select * from pg_replication_slots;"
-#sudo -H -u postgres psql -c "select * from pg_drop_replication_slot('replica');"
-
-
