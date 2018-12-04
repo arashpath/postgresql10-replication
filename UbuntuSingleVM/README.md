@@ -1,0 +1,79 @@
+# Testing scenarios with Single VM approach - Ubuntu 
+To avoid complication of multiple vms and nas we lets test on a single vm
+## Tutorials
+- [Streaming Replication](https://www.scalingpostgres.com/tutorials/postgresql-streaming-replication/)
+- [Replication Slots](https://www.scalingpostgres.com/tutorials/postgresql-replication-slots/)
+
+## Setup
+Create new directory and download and place the [Vagrantfile](./Vagrantfile)
+inside the directory.
+Open Command prompt cd into the directory and run `vagrant up`
+
+## Testing
+### Testing Replication
+```
+# login to server
+vagrant ssh
+
+# create database with some data 
+sudo su - postgres 
+psql -c "create database test;" -p 5432 
+psql test -c " 
+create table test_table ( 
+  id integer, 
+  title character varying(100), 
+  comments text, 
+  insert_time timestamp without time zone, 
+  master character varying(100) 
+); 
+
+insert into test_table (id, title, comments, insert_time, master) values 
+(100, 'Data Created', 'Main as Master', now(), 'main'), 
+(101, 'Testing Replication', 'This should replicate on replica1', now(), 'main'); 
+"  
+
+# verify data has been replicated on replica
+psql test -c "select * from test_table;"          #Main
+psql test -c "select * from test_table;" -p 5433  #Replica 
+
+exit
+exit
+```
+
+### Testing FailOver
+```
+# Login and run fail-over script
+vagrant ssh
+sh /vagrant/fail_over.sh 
+
+# Insert data in replica1 (Current master)
+sudo su - postgres
+psql test -c "insert into test_table (id, title, comments, insert_time, master) values 
+(102, 'Testing FailOver', 'Replica1 as master', now(), 'replica1'), 
+(103, 'Testing FailOver', 'this should replicate on main', 'replica1');" -p 5433 
+
+# verify data has been replicated on replica
+psql test -c "select * from test_table;"          #Main
+psql test -c "select * from test_table;" -p 5433  #Replica 
+
+exit
+exit
+```
+### Testing FailBack
+
+```
+vagrant ssh
+sh /vagrant/fail_back.sh
+
+# Insert data in main (Current master)
+sudo su - postgres
+psql test -c "insert into test_table (id, title, comments, insert_time, master) values 
+(104, 'Testing FailBack', 'main as master', now(), 'main'), 
+(105, 'Testing FailBack', 'this should replicate on replica1', now(), 'main');" 
+
+psql test -c "select * from test_table;"         #Master
+psql test -c "select * from test_table;" -p 5433 #Replica
+
+exit
+exit
+```
