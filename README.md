@@ -36,13 +36,9 @@ Writes	             Reads
 - [x] Promote Slave on Master failure :heavy_check_mark:
 - [ ] Demote old Master as Slave :heavy_check_mark:
   - [ ] Simple `recovery.conf` method :x:
-  - [ ] `pg_rewind` method :zzz:
   - [x] New Base Backup :heavy_check_mark:
-- [ ] [Testing scenarios with Single VM approach](../UbuntuSingleVM/UbuntuSingleVM) 
-  - [x] [Create and Verify Replication](./UbuntuSingleVM/#testing-replication) :heavy_check_mark:
-    - [x] Testing Without Replication Slot
-      - [x] [Testing FailOver](../UbuntuSingleVM/UbuntuSingleVM#testing-failover) :heavy_check_mark:
-      - [x] [Testing FailBack](../UbuntuSingleVM/UbuntuSingleVM#testing-failover) :heavy_check_mark:
-    - [ ] Testing With Replication Slot
-      - [ ] [Testing FailOver](../UbuntuSingleVM/UbuntuSingleVM#testing-failover) :zzz:
-      - [ ] [Testing FailBack](../UbuntuSingleVM/UbuntuSingleVM#testing-failover) :zzz:
+- [ ] Create Failover / Failback Scripts :zzz:
+- [ ] `pg_rewind` method :zzz:
+### Test Branches
+- :x: Live Scenario [CentOS3VM](../CentOS3VM/CentOS3VM)
+- :heavy_check_mark: Test Scenario [UbuntuSingleVM](../UbuntuSingleVM/UbuntuSingleVM)
