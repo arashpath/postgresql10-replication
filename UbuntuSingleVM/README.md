@@ -1,3 +1,4 @@
+[![Build Status](https://travis-ci.org/arashpath/postgresql10-replication.svg?branch=UbuntuSingleVM)](https://travis-ci.org/arashpath/postgresql10-replication)
 # Testing scenarios with Single VM approach - Ubuntu 
 To avoid complication of multiple vms and nas we lets test on a single vm
 
