@@ -4,12 +4,17 @@ dist: xenial
 sudo: required
 
 before_script:
-  - "cd UbuntuSingleVM"
-  - "bash ubuntu_single_vm_setup.sh"
+- "cd UbuntuSingleVM"
+- "bash ubuntu_single_vm_setup.sh"
 
 script:
-  - "bash queries/test1_replication.sh"
-  - "bash fail_over.sh"
-  - "bash queries/test2_failover.sh"
-  - "bash fail_back.sh" 
-  - "bash queries/test3_failback.sh"
+- "bash queries/test1_replication.sh"
+- "bash fail_over.sh"
+- "bash queries/test2_failover.sh"
+- "bash fail_back.sh" 
+- "bash queries/test3_failback.sh"
+
+# Build only UbuntuSingleVM
+branches:
+  only:
+  - UbuntuSingleVM
