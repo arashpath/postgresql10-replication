@@ -1,13 +1,28 @@
 # Testing scenarios with Single VM approach - Ubuntu 
 To avoid complication of multiple vms and nas we lets test on a single vm
+
+## Progress Status
+- [x] [Create and Verify Replication](#testing-replication) :heavy_check_mark:
+  - [x] Testing Without Replication Slot
+    - [x] [Testing FailOver](#testing-failover) :heavy_check_mark:
+    - [x] [Testing FailBack](#testing-failover) :heavy_check_mark:
+  - [ ] Testing With Replication Slot
+    - [ ] [Testing FailOver](#testing-failover) :zzz:
+    - [ ] [Testing FailBack](#testing-failover) :zzz:
+
+
 ## Tutorials
 - [Streaming Replication](https://www.scalingpostgres.com/tutorials/postgresql-streaming-replication/)
 - [Replication Slots](https://www.scalingpostgres.com/tutorials/postgresql-replication-slots/)
 
 ## Setup
-Create new directory and download and place the [Vagrantfile](./Vagrantfile)
-inside the directory.
-Open Command prompt cd into the directory and run `vagrant up`
+```
+git clone https://github.com/arashpath/postgresql10-replication.git
+cd postgresql10-replication
+git checkout UbuntuSingleVM
+cd UbuntuSingleVM
+vagrant up
+```
 
 ## Testing
 ### Testing Replication
