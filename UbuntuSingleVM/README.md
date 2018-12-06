@@ -3,18 +3,25 @@
 To avoid complication of multiple vms and nas we lets test on a single vm
 
 ## Progress Status
-- [x] [Create and Verify Replication](#testing-replication) :heavy_check_mark:
-- [x] Testing Without Replication Slot :heavy_check_mark:
-  - [x] [Testing FailOver](#testing-failover) 
-  - [x] [Testing FailBack](#testing-failback) 
-- [x] Testing With Replication Slot :heavy_check_mark:
-  - [x] [Testing FailOver](#testing-failover) 
-  - [x] [Testing FailBack](#testing-failback)
+- :heavy_check_mark: [Setup Streaming Replication](#tutorials)
+- :heavy_check_mark: [Setup Replication Slots](#tutorials) 
+- :heavy_check_mark: [FailOver](#testing-failover)
+- :heavy_check_mark: [Easy FailBack](#testing-failback)
+- [] Replication Monitoring
+- [] FailBack with pgrewind
+- [] WAL Archiving and Restoring
+- [] Testing PITR using log replay
 
 
 ## Tutorials
 - [Streaming Replication](https://www.scalingpostgres.com/tutorials/postgresql-streaming-replication/)
 - [Replication Slots](https://www.scalingpostgres.com/tutorials/postgresql-replication-slots/)
+- [Easy FailBack](https://www.scalingpostgres.com/tutorials/postgresql-replication-easy-failback/)
+- [Replication Monitoring](https://www.scalingpostgres.com/tutorials/postgresql-replication-monitoring/)
+- [FailBack with pg_rewind](https://www.scalingpostgres.com/tutorials/postgresql-replication-failback-pg-rewind/)
+- [WAL Archiving](https://www.scalingpostgres.com/tutorials/postgresql-wal-archiving-pg-receivewal/)
+- [Restore Archived WAL](https://www.scalingpostgres.com/tutorials/postgresql-restore-when-using-pg-receivewal/)
+- [Backup & PITR](https://www.scalingpostgres.com/tutorials/postgresql-backup-point-in-time-recovery/)
 
 ## Setup
 ```
