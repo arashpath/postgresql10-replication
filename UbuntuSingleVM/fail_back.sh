@@ -12,7 +12,7 @@ sudo pg_ctlcluster 10 replica1 stop
 
 echo "Promote Slave: main ..."
 sudo pg_ctlcluster 10 main promote
-sudo tail -n 100 /var/log/postgresql/postgresql-10-main.log
+sudo tail -n 20 /var/log/postgresql/postgresql-10-main.log
 
 echo "Creating recovery.conf for: replica1 "
 sudo mv /var/lib/postgresql/10/replica1/recovery.done \
@@ -25,7 +25,7 @@ from pg_create_physical_replication_slot('replica');"
 # Starting Main As Slave
 echo "Deomote Master..."
 sudo systemctl start postgresql@10-replica1
-sudo tail -n 100 /var/log/postgresql/postgresql-10-replica1.log
+sudo tail -n 20 /var/log/postgresql/postgresql-10-replica1.log
 
 # review and drop slots on replica
 sudo -H -u postgres psql -p 5433 -c "select * from pg_replication_slots;"

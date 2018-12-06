@@ -1,4 +1,4 @@
-#!/bin/bash
+ #!/bin/bash
 
 set -e
 # Update Source list
@@ -11,7 +11,8 @@ arc_loc=/var/lib/postgresql/pg_log_archive
 conf_loc=/etc/postgresql/10/
 
 #Creating Archive Directories
-sudo -H -u postgres mkdir -p $arc_loc/{main,replica1}
+sudo -H -u postgres mkdir -p $arc_loc/main
+sudo -H -u postgres mkdir -p $arc_loc/replica1
 
 # Configuring Master ----------------------------------------------------------#
 echo "Configuring Master"
@@ -42,6 +43,7 @@ select * from pg_create_physical_replication_slot('replica');
 select * from pg_replication_slots;" 
 
 sudo pg_ctlcluster 10 main restart
+sudo tail -n 20 /var/log/postgresql/postgresql-10-main.log 
 
 # Creating & Configuring Slave ------------------------------------------------#
 echo "Configuring Slave"
@@ -83,7 +85,7 @@ primary_slot_name = 'replica'
 EOF"
 
 sudo pg_ctlcluster 10 replica1 start ;
-sudo tail -n 100 /var/log/postgresql/postgresql-10-replica1.log 
+sudo tail -n 20 /var/log/postgresql/postgresql-10-replica1.log 
 
 echo "# Server Status ======================================================= #"
 sudo pg_lsclusters
