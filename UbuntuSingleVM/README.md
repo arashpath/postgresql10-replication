@@ -8,9 +8,9 @@ To avoid complication of multiple vms and nas we lets test on a single vm
 - :heavy_check_mark: [FailOver](#testing-failover)
 - :heavy_check_mark: [Easy FailBack](#testing-failback)
 - :heavy_check_mark: Replication Monitoring
-- [] FailBack with pgrewind
-- [] WAL Archiving and Restoring
-- [] Testing PITR using log replay
+- [ ] FailBack with pgrewind
+- [ ] WAL Archiving and Restoring
+- [ ] Testing PITR using log replay
 
 
 ## Tutorials
