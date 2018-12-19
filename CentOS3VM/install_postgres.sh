@@ -12,16 +12,16 @@ rhel-7-x86_64/pgdg-centos10-10-2.noarch.rpm"
 
 yum -y install $pg10_url
 yum -y install postgresql10-server
-mkdir $datadir ; chown postgres.postgres $datadir
-export PGSETUP_INITDB_OPTIONS="--pgdata=$datadir"
+mkdir $PGDATA ; chown postgres.postgres $PGDATA
+export PGSETUP_INITDB_OPTIONS="--pgdata=$PGDATA"
 sed -i "/Environment=PGDATA=/ {
-    s:^.*$:Environment=PGDATA=${datadir}:
+    s:^.*$:Environment=PGDATA=${PGDATA}:
 }" /usr/lib/systemd/system/postgresql-10.service
 sudo /usr/pgsql-10/bin/postgresql-10-setup initdb
 
 sed -i "/listen_addresses =/ {
 s/^.*$/listen_addresses = '*' /
-}" $datadir/postgresql.conf
+}" $PGDATA/postgresql.conf
 
 systemctl start  postgresql-10
 systemctl enable postgresql-10 2>/dev/null

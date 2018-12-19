@@ -10,8 +10,8 @@ echo "
 source $PKGS/pgCluster.env
 
 # Get PostgreSQL DATA directory -----------------------------------------------#
-QUERY="SELECT setting FROM pg_settings WHERE name = 'data_directory';"
-PGDATA=$(sudo -u postgres -- psql -Atc "$QUERY" 2> /dev/null)
+#QUERY="SELECT setting FROM pg_settings WHERE name = 'data_directory';"
+#PGDATA=$(sudo -u postgres -- psql -Atc "$QUERY" 2> /dev/null)
 echo $PGDATA
 
 # Genetating pg_ssl Keys ------------------------------------------------------#
@@ -34,10 +34,10 @@ sed -i '/ssl = off/s/^#ssl = off/ssl = on/
 
 # Setting Up Archiving --------------------------------------------------------#
 echo "Configuring Archiving..."
-mkdir -p $nas_arc_path/$HOSTNAME
-chown -R postgres.postgres $nas_arc_path/$HOSTNAME
-archive_cmd="archive_command = 'test ! -f $nas_arc_path/$HOSTNAME/%f \&\& \
-  cp %p $nas_arc_path/$HOSTNAME/%f'"
+mkdir -p $arc_path/$HOSTNAME
+chown -R postgres.postgres $arc_path/$HOSTNAME
+archive_cmd="archive_command = 'test ! -f $arc_path/$HOSTNAME/%f \&\& \
+  cp %p $arc_path/$HOSTNAME/%f'"
 sed -i "/archive_mode =/ {
     s/^#//
     s/ = off/ = on/
@@ -51,11 +51,11 @@ sed -i "/archive_mode =/ {
 sed -i "/wal_level =/s/^.*$/wal_level = replica/
 /max_wal_senders =/ {
     s/^#//
-    s/max_wal_senders = .*/max_wal_senders = 3/
+    s/max_wal_senders = .*/max_wal_senders = 10/
 }
 /wal_keep_segments =/ {
     s/^#//
-    s/wal_keep_segments = .*/wal_keep_segments = 32/
+    s/wal_keep_segments = .*/wal_keep_segments = 64/
 }
 /hot_standby = on/ {
     s/^#//
@@ -78,11 +78,13 @@ hostssl  replication    replrole        $psql02/32      scram-sha-256 \
 # Creating recovery.done ------------------------------------------------------#
 conninfo="host=$psql02 port=5432 user=$r_user password=$r_pass sslmode=require"
 cat <<EOF > $PGDATA/recovery.done
-standby_mode      = 'on'
-primary_conninfo  = '$conninfo'
-trigger_file      = '/tmp/MasterNow'
-primary_slot_name = 'replslot1'
-restore_command   = 'cp $nas_arc_path/$HOSTNAME/%f "%p"'
+standby_mode             = 'on'
+recovery_target_timeline = 'latest'
+primary_conninfo         = '$conninfo'
+trigger_file             = '/tmp/pg_failover_trigger'
+primary_slot_name        = 'replslot1'
+restore_command          = 'cp $arc_path/$HOSTNAME/%f "%p"'
+archive_cleanup_command  = 'pg_archivecleanup $arc_path/$HOSTNAME %r'
 EOF
 chown postgres.postgres $PGDATA/recovery.done
 
