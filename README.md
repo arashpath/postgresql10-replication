@@ -24,13 +24,6 @@ Writes	             Reads
 * WAL files available on a network drive
 * Network drive backed up
 
-## [See Docs](https://github.com/arashpath/postgresql10-replication/wiki)
-
-## References
-- [Streaming replication](https://snippets.aktagon.com/snippets/824-postgresql-10-with-streaming-replication-and-pitr)
-- [Monitoring replication](https://pgdash.io/blog/monitoring-postgres-replication.html)
-
-----
 ## Progress Status
 - [x] Setup __Streaming Replication__ with replication slot :heavy_check_mark:
 - [x] Planned __Failover and Failback__ using `recovery.conf` method :heavy_check_mark:
@@ -38,6 +31,7 @@ Writes	             Reads
 - [ ] `pg_rewind` method :zzz:
 - [ ] Create Failover / Failback Scripts :zzz:
 
+----
 ### Test Branches
 - Live Scenario [CentOS3VM](../CentOS3VM/CentOS3VM)
 - Test Scenario [UbuntuSingleVM](../UbuntuSingleVM/UbuntuSingleVM)
