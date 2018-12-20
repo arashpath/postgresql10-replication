@@ -32,13 +32,12 @@ Writes	             Reads
 
 ----
 ## Progress Status
-- [x] Create Master-Slave :heavy_check_mark:
-- [x] Promote Slave on Master failure :heavy_check_mark:
-- [ ] Demote old Master as Slave :heavy_check_mark:
-  - [ ] Simple `recovery.conf` method :x:
-  - [x] New Base Backup :heavy_check_mark:
-- [ ] Create Failover / Failback Scripts :zzz:
+- [x] Setup __Streaming Replication__ with replication slot :heavy_check_mark:
+- [x] Planned __Failover and Failback__ using `recovery.conf` method :heavy_check_mark:
+- [x] __Fresh Base Backup__ methord in case of Master or Slave Crash :heavy_check_mark:
 - [ ] `pg_rewind` method :zzz:
+- [ ] Create Failover / Failback Scripts :zzz:
+
 ### Test Branches
 - Live Scenario [CentOS3VM](../CentOS3VM/CentOS3VM)
 - Test Scenario [UbuntuSingleVM](../UbuntuSingleVM/UbuntuSingleVM)
