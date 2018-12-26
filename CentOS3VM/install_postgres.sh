@@ -11,7 +11,7 @@ pg10_url="https://download.postgresql.org/pub/repos/yum/10/redhat/\
 rhel-7-x86_64/pgdg-centos10-10-2.noarch.rpm"
 
 yum -y install $pg10_url
-yum -y install postgresql10-server
+yum -y install postgresql10-server postgresql10-contrib
 mkdir $PGDATA ; chown postgres.postgres $PGDATA
 export PGSETUP_INITDB_OPTIONS="--pgdata=$PGDATA"
 sed -i "/Environment=PGDATA=/ {

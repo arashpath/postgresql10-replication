@@ -1,30 +1,107 @@
 #!/bin/bash
 set -e
-function check_srv() {
-  recovery=$(sudo -u postgres -H -- psql -At\
-      -c "select pg_is_in_recovery();" 2> /dev/null)
-  if [ "$recovery" == "f" ]; 
-    then server="MASTER"
-  elif [ "$recovery" == "t" ]; 
-    then server="SLAVE"
+source /vagrant/pgCluster.env
+# DataBase Server IPs 
+psql01="$psql01"
+psql02="$psql02"
+
+# Setup Password less acess ---------------------------------------------------#
+setupssh() {
+  # Host Entry
+  if ! grep -q "# DataBase Servers" /etc/hosts; then
+    echo "Creating Host Entries for DB Servers ..."
+    echo "# DataBase Servers
+    $psql01 psql01
+    $psql02 psql02" | sudo tee -a /etc/hosts
   fi
+  # SSH KeyGen
+  if [ ! -f ~/.ssh/id_rsa ]; then
+    echo "Generating ssh keygen ..."
+    ssh-keygen -f ~/.ssh/id_rsa -q -P ""
+  fi
+  # Passwdless SSH
+  for srv in psql01 psql02
+    do 
+    ssh -o PasswordAuthentication=no  -o BatchMode=yes $srv exit &>/dev/null
+    test $? == 0 || echo "Copying authorized keys to $srv ..." ; \
+      cat ~/.ssh/id_rsa.pub | ssh $srv 'cat >> .ssh/authorized_keys'
+  done
 }
-check_srv
-echo "
+
+# Get PostgreSQL DATA directory -----------------------------------------------#
+pgdata() { 
+QUERY="SELECT setting FROM pg_settings WHERE name = 'data_directory';"
+PGDATA=$(
+ssh $1 <<EOF 2> /dev/null
+  sudo -u postgres -- psql -Atc "$QUERY" 2> /dev/null
+EOF
+)
+echo $PGDATA
+}
+
+create_slot() {
+  CREATE_REP_SLOT="SELECT pg_create_physical_replication_slot('$2');"
+  ssh $1 <<EOF 2>/dev/null
+  sudo -u postgres -H -- psql -c "$CREATE_REP_SLOT"
+EOF
+}
+
+drop_slot() {
+  DROP_REP_SLOT="SELECT pg_drop_physical_replication_slot('$2');"
+  ssh $1 <<EOF 2>/dev/null
+  sudo -u postgres -H -- psql -c "$DROP_REP_SLOT"
+EOF
+}
+
+check_cluster() {
+  #Commands
+  inrecovery="sudo -u postgres -H -- psql -At\
+              -c 'select pg_is_in_recovery();' 2> /dev/null"
+  if [[ $(ssh $psql01 "$inrecovery") == 'f' \
+    && $(ssh $psql02 "$inrecovery") == 't' ]]; then
+      master=$psql01 ; slave=$psql02
+  elif [[ $(ssh $psql01 "$inrecovery") == 't' \
+    && $(ssh $psql02 "$inrecovery") == 'f' ]]; then
+      master=$psql02 ; slave=$psql01
+  else 
+    echo "ERROR: Some Something is Wrong." 
+  fi
+  echo "Master : $master"
+  echo "Slave  : $slave"
+}
+
+failover() {
+  #Commands
+     stop="sudo systemctl stop  postgresql-10"
+    start="sudo systemctl start postgresql-10" 
+      log="sudo tail -20  $PGDATA/log/postgresql-$(date +%a).log"
+  promote="sudo touch /tmp/pg_failover_trigger"
+   demote="sudo mv -v $PGDATA/recovery.{done,conf}"
+  
+  ssh $master "$stop"
+  ssh $slave  "$promote"
+  create_slot $slave "replslot1" 
+  ssh $slave  "$log"
+  ssh $master "$demote"
+  ssh $master "$start"
+  drop_slot $master "replslot1" 
+}
+
+
+case "$1" in
+  -s)   setupssh
+        ;; 
+  -x)   check_cluster
+        failover
+        check_cluster
+        ;;
+  -c|*) check_cluster
+        ;;
+esac
+
+
+#echo "
 ################################################################################
-             >>> Server $HOSTNAME is currently in $server mode <<<                 
+#             >>> Server $HOSTNAME is currently in $server mode <<<                 
 ################################################################################
-"
-
-#M SELECT pg_reload_conf();
-
-#M systemctl stop postgresql-10
-
-#S touch /tmp/pg_failover_trigger
-#S SELECT pg_create_physical_replication_slot('replslot1');
-
-#M mv /opt/psqlDATA/recovery.{done,conf}
-#M systemctl start postgresql-10
-#M select pg_drop_replication_slot('replslot1');
-sudo tail -100  /opt/psqlDATA/log/postgresql-$(date +%a).log
-
+#"

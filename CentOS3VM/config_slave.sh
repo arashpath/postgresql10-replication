@@ -21,6 +21,7 @@ rm -rf $PGDATA
 PGPASSWORD=$r_pass \
 pg_basebackup -h $psql01 -D $PGDATA -P -U $r_user -X stream 2>/dev/null
 chown -R postgres.postgres $PGDATA
+rm -f $PGDATA/logs/*.log
 #SELECT pg_reload_conf();
 
 # Setting Up Archiving --------------------------------------------------------#

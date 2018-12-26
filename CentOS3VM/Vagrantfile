@@ -26,7 +26,6 @@ Vagrant.configure("2") do |config|
         sudo /bin/sh /vagrant/nas_mnt.sh
         sudo /bin/sh /vagrant/install_postgres.sh
         sudo /bin/sh /vagrant/config_master.sh
-        sudo /bin/sh /vagrant/failover.sh
       MASTER
   end
   # Creating a VM for Slave 
@@ -37,7 +36,6 @@ Vagrant.configure("2") do |config|
         sudo /bin/sh /vagrant/nas_mnt.sh
         sudo /bin/sh /vagrant/install_postgres.sh
         sudo /bin/sh /vagrant/config_slave.sh
-        sudo /bin/sh /vagrant/failover.sh
       SLAVE
   end
 end
