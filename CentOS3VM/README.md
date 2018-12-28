@@ -49,7 +49,7 @@ CentOS7 3VMs (Master, Slave and NAS)
 * [Verify](#Verify) : `test\verify.bat`
 ### Testing FailOver
 * FailOver Master(__psql01__) to Slave(__psql02__) Servers
-  - `vagrant ssh nas -c "sh /vagrant/fail_over.sh -x"`
+  - `vagrant ssh nas -c "sh /vagrant/failover.sh -x"`
 * Connect to __psql02__ Now Primary Server
   - `vagrant ssh psql02 -c 'sudo -u postgres psql testdb'`
 * Insert some more data to verify replication

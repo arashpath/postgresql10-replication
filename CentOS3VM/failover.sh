@@ -5,6 +5,19 @@ source /vagrant/pgCluster.env
 psql01="$psql01"
 psql02="$psql02"
 
+confirm() {
+    # call with a prompt string or use a default
+    read -r -p "${1:-Continue? [y/N]} " response
+    case "$response" in
+        [yY][eE][sS]|[yY]) 
+            true
+            ;;
+        *)
+            false
+            ;;
+    esac
+}
+
 # Setup Password less acess ---------------------------------------------------#
 setupssh() {
   # Host Entry
@@ -22,8 +35,8 @@ setupssh() {
   # Passwdless SSH
   for srv in psql01 psql02
     do 
-    ssh -o PasswordAuthentication=no  -o BatchMode=yes $srv exit &>/dev/null
-    test $? == 0 || echo "Copying authorized keys to $srv ..." ; \
+    ssh -o PasswordAuthentication=no  -o BatchMode=yes $srv &>/dev/null || \
+      echo "Copying authorized keys to $srv ..." ; \
       cat ~/.ssh/id_rsa.pub | ssh $srv 'cat >> .ssh/authorized_keys'
   done
 }
@@ -39,6 +52,7 @@ EOF
 echo $PGDATA
 }
 
+# Create OR Drop Replication Slots --------------------------------------------#
 create_slot() {
   CREATE_REP_SLOT="SELECT pg_create_physical_replication_slot('$2');"
   ssh $1 <<EOF 2>/dev/null
@@ -53,15 +67,16 @@ drop_slot() {
 EOF
 }
 
+# Check Servers whether it's Master or Slave ----------------------------------#
 check_cluster() {
   #Commands
   inrecovery="sudo -u postgres -H -- psql -At\
               -c 'select pg_is_in_recovery();' 2> /dev/null"
-  if [[ $(ssh $psql01 "$inrecovery") == 'f' \
-    && $(ssh $psql02 "$inrecovery") == 't' ]]; then
+  if   [[ $(ssh $psql01 "$inrecovery") == 'f' \
+    &&    $(ssh $psql02 "$inrecovery") == 't' ]]; then
       master=$psql01 ; slave=$psql02
   elif [[ $(ssh $psql01 "$inrecovery") == 't' \
-    && $(ssh $psql02 "$inrecovery") == 'f' ]]; then
+    &&    $(ssh $psql02 "$inrecovery") == 'f' ]]; then
       master=$psql02 ; slave=$psql01
   else 
     echo "ERROR: Some Something is Wrong." 
@@ -70,6 +85,7 @@ check_cluster() {
   echo "Slave  : $slave"
 }
 
+# FailOver servers ------------------------------------------------------------#
 failover() {
   #Commands
      stop="sudo systemctl stop  postgresql-10"
@@ -78,10 +94,13 @@ failover() {
   promote="sudo touch /tmp/pg_failover_trigger"
    demote="sudo mv -v $PGDATA/recovery.{done,conf}"
   
+  echo "$master: Stopping Master ..."
   ssh $master "$stop"
+  echo "$slave: Promoting Slave ..."
   ssh $slave  "$promote"
   create_slot $slave "replslot1" 
   ssh $slave  "$log"
+  echo "$master: Demoting Master and starting it as Slave ..."
   ssh $master "$demote"
   ssh $master "$start"
   drop_slot $master "replslot1" 
@@ -92,7 +111,7 @@ case "$1" in
   -s)   setupssh
         ;; 
   -x)   check_cluster
-        failover
+        confirm && failover
         check_cluster
         ;;
   -c|*) check_cluster
