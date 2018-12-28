@@ -61,7 +61,7 @@ EOF
 }
 
 drop_slot() {
-  DROP_REP_SLOT="SELECT pg_drop_physical_replication_slot('$2');"
+  DROP_REP_SLOT="SELECT pg_drop_replication_slot('$2');"
   ssh $1 <<EOF 2>/dev/null
   sudo -u postgres -H -- psql -c "$DROP_REP_SLOT"
 EOF
@@ -94,16 +94,17 @@ failover() {
   promote="sudo touch /tmp/pg_failover_trigger"
    demote="sudo mv -v $PGDATA/recovery.{done,conf}"
   
-  echo "$master: Stopping Master ..."
+  echo -e "\n $master: Stopping Master ..."
   ssh $master "$stop"
-  echo "$slave: Promoting Slave ..."
+  echo -e "\n $slave:  Promoting Slave ..."
   ssh $slave  "$promote"
   create_slot $slave "replslot1" 
   ssh $slave  "$log"
-  echo "$master: Demoting Master and starting it as Slave ..."
+  echo -e "\n $master: Demoting Master & Starting it as Slave ..."
   ssh $master "$demote"
   ssh $master "$start"
   drop_slot $master "replslot1" 
+  ssh $master "$log"
 }
 
 
