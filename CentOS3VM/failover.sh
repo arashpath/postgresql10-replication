@@ -55,14 +55,14 @@ echo $PGDATA
 # Create OR Drop Replication Slots --------------------------------------------#
 create_slot() {
   CREATE_REP_SLOT="SELECT pg_create_physical_replication_slot('$2');"
-  ssh $1 <<EOF 2>/dev/null
+  ssh $1 <<EOF &>/dev/null
   sudo -u postgres -H -- psql -c "$CREATE_REP_SLOT"
 EOF
 }
 
 drop_slot() {
   DROP_REP_SLOT="SELECT pg_drop_replication_slot('$2');"
-  ssh $1 <<EOF 2>/dev/null
+  ssh $1 <<EOF &>/dev/null
   sudo -u postgres -H -- psql -c "$DROP_REP_SLOT"
 EOF
 }
@@ -92,15 +92,16 @@ failover() {
     start="sudo systemctl start postgresql-10" 
       log="sudo tail -20  $PGDATA/log/postgresql-$(date +%a).log"
   promote="sudo touch /tmp/pg_failover_trigger"
-   demote="sudo mv -v $PGDATA/recovery.{done,conf}"
+   demote="sudo mv -v $PGDATA/recovery.{done,conf} ; \
+           sudo rm -vf /tmp/pg_failover_trigger"
   
-  echo -e "\n $master: Stopping Master ..."
+  echo -e "\n $master : Stopping Master ..."
   ssh $master "$stop"
-  echo -e "\n $slave:  Promoting Slave ..."
+  echo -e "\n $slave : Promoting Slave ..."
   ssh $slave  "$promote"
   create_slot $slave "replslot1" 
   ssh $slave  "$log"
-  echo -e "\n $master: Demoting Master & Starting it as Slave ..."
+  echo -e "\n $master: Demoting Master & starting it as Slave ..."
   ssh $master "$demote"
   ssh $master "$start"
   drop_slot $master "replslot1" 

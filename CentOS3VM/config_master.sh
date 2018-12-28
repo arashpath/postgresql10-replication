@@ -12,7 +12,7 @@ source $PKGS/pgCluster.env
 # Get PostgreSQL DATA directory -----------------------------------------------#
 #QUERY="SELECT setting FROM pg_settings WHERE name = 'data_directory';"
 #PGDATA=$(sudo -u postgres -- psql -Atc "$QUERY" 2> /dev/null)
-echo $PGDATA
+echo "PostgreSQL Data Directory:  $PGDATA"
 
 # Genetating pg_ssl Keys ------------------------------------------------------#
 echo "Configuring SSL Connection..."
@@ -67,7 +67,7 @@ echo "Configuring Replication..."
 REP_SLOT="set password_encryption = 'scram-sha-256';
     CREATE ROLE $r_user WITH REPLICATION LOGIN PASSWORD '$r_pass';
     SELECT pg_create_physical_replication_slot('replslot1');"
-sudo -u postgres -H -- psql -c "$REP_SLOT" 2> /dev/null
+sudo -u postgres -H -- psql -c "$REP_SLOT" &> /dev/null
 
 # Editing pg_hba.conf ---------------------------------------------------------#
 sed -i "/# replication privilege/a\

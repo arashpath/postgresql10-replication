@@ -12,7 +12,7 @@ source $PKGS/pgCluster.env
 # Get PostgreSQL DATA directory -----------------------------------------------#
 #QUERY="SELECT setting FROM pg_settings WHERE name = 'data_directory';"
 #PGDATA=$(sudo -u postgres -- psql -Atc "$QUERY" 2> /dev/null)
-echo $PGDATA
+echo "PostgreSQL Data Directory:  $PGDATA"
 
 # Creating new base backup ----------------------------------------------------#
 echo "Creating new base backup..."

@@ -6,8 +6,8 @@ CentOS7 3VMs (Master, Slave and NAS)
 - :heavy_check_mark: Setup Replication Slots
 - :heavy_check_mark: FailOver
 - :heavy_check_mark: Easy FailBack
-- [ ] Replication Monitoring
-- [ ] FailBack with pgrewind
+- [x] Replication Monitoring
+- [x] FailBack with pgrewind
 - [ ] WAL Archiving and Restoring
 - [ ] Testing PITR using log replay
 
@@ -37,13 +37,13 @@ CentOS7 3VMs (Master, Slave and NAS)
     id integer,
     time timestamp without time zone,
     dbsrv character varying(100),
-    title character varying(100),
+    task character varying(100),
     comments text
   );
   INSERT INTO test_table 
-    (id,  time,  dbsrv,    title,              comments)               values
-    (100, now(), 'psql01', 'DB Created',       'psql01 as Master'            ),
-    (101, now(), 'psql01', 'Test Replication', 'should replicate on psql02'  );
+    (id,  time,  dbsrv,    task,          comments)               values
+    (100, now(), 'psql01', 'DB Created',  'psql01 as Master'            ),
+    (101, now(), 'psql01', 'Replication', 'should replicate on psql02'  );
   \q
   ```
 * [Verify](#Verify) : `test\verify.bat`
@@ -55,9 +55,9 @@ CentOS7 3VMs (Master, Slave and NAS)
 * Insert some more data to verify replication
   ```
   INSERT INTO test_table
-    (id,  time,  dbsrv,    title,              comments)           values
-    (102, now(), 'psql02', 'Test FailOver', 'psql02 as master'         ),
-    (103, now(), 'psql02', 'Test FailOver', 'should replicate on psql01' );
+    (id,  time,  dbsrv,    task,       comments)           values
+    (102, now(), 'psql02', 'FailOver', 'psql02 as master'         ),
+    (103, now(), 'psql02', 'FailOver', 'should replicate on psql01' );
   \q
   ```
 * [Verify](#Verify) : `test\verify.bat`
@@ -69,12 +69,13 @@ CentOS7 3VMs (Master, Slave and NAS)
 * Insert some more data to verify replication
   ```
   INSERT INTO test_table
-    (id,  time,  dbsrv,    title,              comments)           values
-    (104, now(), 'psql01', 'Test FailBack', 'psql01 as master'         ),
-    (105, now(), 'psql01', 'Test FailBack', 'should replicate on psql02' );
+    (id,  time,  dbsrv,    task,       comments)           values
+    (104, now(), 'psql01', 'FailBack', 'psql01 as master'         ),
+    (105, now(), 'psql01', 'FailBack', 'should replicate on psql02' );
   \q
   ```
 * [Verify](#Verify) : `test\verify.bat`
+
 ## Verify 
   Verify if data has been present on both servers
   `test\verify.bat`
