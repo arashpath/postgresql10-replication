@@ -90,7 +90,7 @@ failover() {
   #Commands
      stop="sudo systemctl stop  postgresql-10"
     start="sudo systemctl start postgresql-10" 
-      log="sudo tail -20  $PGDATA/log/postgresql-$(date +%a).log"
+      log="sudo tail -10  $PGDATA/log/postgresql-$(date +%a).log"
   promote="sudo touch /tmp/pg_failover_trigger"
    demote="sudo mv -v $PGDATA/recovery.{done,conf} ; \
            sudo rm -vf /tmp/pg_failover_trigger"

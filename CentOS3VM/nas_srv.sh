@@ -7,7 +7,7 @@ source $PKGS/pgCluster.env
 [ -z "$nas_srv_path" ] && nas_srv_path=/opt/ps_nas
 
 # NAS Client
-yum -y install nfs-utils libnfsidmap
+yum -qy install nfs-utils libnfsidmap
 systemctl enable rpcbind 2>/dev/null
 systemctl start  rpcbind
 

@@ -60,6 +60,9 @@ sed -i "/wal_level =/s/^.*$/wal_level = replica/
 /hot_standby = on/ {
     s/^#//
 }
+/wal_log_hints = on/ {
+    s/^#//
+}
 " $PGDATA/postgresql.conf
 
 # Creating Replication Role and Permission ------------------------------------#
