@@ -28,8 +28,10 @@ Writes	             Reads
 - [x] Setup __Streaming Replication__ with replication slot :heavy_check_mark:
 - [x] Planned __Failover and Failback__ using `recovery.conf` method :heavy_check_mark:
 - [x] __Fresh Base Backup__ methord in case of Master or Slave Crash :heavy_check_mark:
-- [ ] `pg_rewind` method :zzz:
-- [ ] Create Failover / Failback Scripts :zzz:
+- [x] `pg_rewind` method 
+- [x] Create Failover / Failback Scripts :heavy_check_mark:
+- [ ] BackUp and Restore with archiving :zzz: 
+- [ ] Point-in-time-recovery (PITR) :zzz:
 
 ----
 ### Test Branches
