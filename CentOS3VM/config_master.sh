@@ -4,7 +4,7 @@ PKGS=$(dirname $(readlink -f "$0") )
 
 echo "
 ################################################################################
-#                          Setup as Master Server                              #
+#                          Configuring Master Server                           #
 ################################################################################
 "
 source $PKGS/pgCluster.env

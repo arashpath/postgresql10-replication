@@ -7,7 +7,7 @@ source $PKGS/pgCluster.env
 [ -z "$nas_srv_path" ] && nas_srv_path=/opt/ps_nas
 [ -z "$arc_path" ] && arc_path=/mnt/ps_nas
 
-yum -qy install nfs-utils libnfsidmap
+yum -y install nfs-utils libnfsidmap 1>/dev/null
 systemctl enable rpcbind 2>/dev/null
 systemctl start  rpcbind
 showmount -e $nas_ip

@@ -4,7 +4,7 @@ PKGS=$(dirname $(readlink -f "$0") )
 
 echo "
 ################################################################################
-#                          Setup as Slave Server                               #
+#                          Configuring Slave Server                            #
 ################################################################################
 "
 source $PKGS/pgCluster.env
